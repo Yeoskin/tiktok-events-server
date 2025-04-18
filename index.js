@@ -1,8 +1,23 @@
+const express = require("express");
+const axios = require("axios");
+const crypto = require("crypto");
+const app = express();
+
+app.use(express.json());
+
+const TOKEN = "850cd9c3f67581eff14fc3694aae5742a385d191";
+const PIXEL_ID = "CVUIKCBC77U3AEENFDSG";
+
+// NE PAS ENLEVER : évite les erreurs 502 sur GET
+app.get("/", (req, res) => {
+  res.send("API TikTok Render est active.");
+});
+
 app.post("/tiktok-event", async (req, res) => {
-  const email = req.body.email;
+  const email = req.body?.email;
 
   if (!email) {
-    return res.status(400).send("Email is required.");
+    return res.status(400).send("Email requis dans le corps de la requête.");
   }
 
   const hashedEmail = crypto.createHash("sha256").update(email).digest("hex");
@@ -37,6 +52,8 @@ app.post("/tiktok-event", async (req, res) => {
     res.send("Event sent to TikTok");
   } catch (error) {
     console.error(error.response?.data || error.message);
-    res.status(500).send("Error sending event");
+    res.status(500).send("Erreur lors de l’envoi à TikTok");
   }
 });
+
+app.listen(3000, () => console.log("TikTok event API listening on port 3000"));
