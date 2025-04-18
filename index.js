@@ -1,14 +1,10 @@
-const express = require("express");
-const axios = require("axios");
-const crypto = require("crypto");
-const app = express();
-app.use(express.json());
-
-const TOKEN = "850cd9c3f67581eff14fc3694aae5742a385d191";
-const PIXEL_ID = "CVUIKCBC77U3AEENFDSG";
-
 app.post("/tiktok-event", async (req, res) => {
   const email = req.body.email;
+
+  if (!email) {
+    return res.status(400).send("Email is required.");
+  }
+
   const hashedEmail = crypto.createHash("sha256").update(email).digest("hex");
 
   const payload = {
@@ -44,5 +40,3 @@ app.post("/tiktok-event", async (req, res) => {
     res.status(500).send("Error sending event");
   }
 });
-
-app.listen(3000, () => console.log("TikTok event API listening on port 3000"));
